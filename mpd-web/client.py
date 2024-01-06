@@ -46,8 +46,8 @@ class Client():
         except:
             return None
 
-    def load(self):
-        data = []
+    def load_albums(self):
+        albums = []
         albums_list = self.mpd.list('album')
         # TODO: include progress bar
         for album_name in albums_list:
@@ -71,11 +71,16 @@ class Client():
                 else:
                     album_artwork = False
 
-            data.append({
+            albums.append({
                 "id": album_id,
                 "name": album_name,
                 "artist": album_artist,
                 "year": album_year,
                 "artwork": album_artwork
             })
-        return data
+        return albums
+    
+    def play_album(self, album):
+        self.mpd.clear()
+        self.mpd.findadd('album', album)
+        self.mpd.play()

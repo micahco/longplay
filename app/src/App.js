@@ -4,10 +4,22 @@ import React, { useState, useEffect } from 'react';
 
 const App = () => {
   const [albums, setAlbums] = useState([]);
-  const [gridSize, setGridSize] = useState(5);
-  const [sortMethod, setSortMethod] = useState('year');
-  const [sortOrder, setSortOrder] = useState('ascending');
+  const [sortMethod, setSortMethod] = useState(localStorage.getItem('sortMethod') || 'year');
+  const [sortOrder, setSortOrder] = useState(localStorage.getItem('sortOrder') || 'ascending');
+  const [gridSize, setGridSize] = useState(localStorage.getItem('gridSize') || 5);
   const host = !process.env.NODE_ENV || process.env.NODE_ENV === 'development' ? 'http://127.0.0.1:5000' : '';
+
+  useEffect(() => {
+    localStorage.setItem('sortMethod', sortMethod)
+  }, [sortMethod]);
+
+  useEffect(() => {
+    localStorage.setItem('sortOrder', sortOrder)
+  }, [sortOrder]);
+
+  useEffect(() => {
+    localStorage.setItem('gridSize', gridSize)
+  }, [gridSize]);
   
   useEffect(() => {
     fetch(`${host}/api`)
@@ -18,7 +30,7 @@ const App = () => {
          .catch((err) => {
             console.log(err.message);
          });
-  }, []);
+  }, [host]);
 
   const compareAlbums = ((a, b) => {
     if (sortOrder === 'descending') {
@@ -34,9 +46,29 @@ const App = () => {
         if (a.artist > b.artist) {
           return 1;
         }
+        return 0
+      default:
+        return 0
     }
-    return 0
   })
+
+  const playAlbum = (album) => {
+    fetch(`${host}/api`, {
+      method: 'POST',
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({ album })
+    })
+         .then((response) => response.json())
+         .then((data) => {
+            console.log(data)
+         }) 
+         .catch((err) => {
+            console.log(err.message);
+         });
+  }
 
   const itemStyle = {
     width: gridSize * 50
@@ -76,7 +108,12 @@ const App = () => {
       <div className='container'>
         {albums.sort(compareAlbums).map((album) => {
           return (
-            <div className="item" style={itemStyle} key={album.id}>
+            <div
+              key={album.id}
+              className="item" 
+              style={itemStyle}
+              onClick={(e) => {playAlbum(album.name)}}
+            >
               {album.artwork === true &&
                 <img
                   alt={album.name}
