@@ -2,16 +2,15 @@
 # coding: utf-8
 
 import os
+from pathlib import Path
 import hashlib
+from flask import Flask, jsonify, send_from_directory
 import musicpd
-
-ALBUM_ART_DIR = os.path.join(os.getcwd(), 'album_art')
 
 class Client():
     def __init__(self):
         self.mpd = musicpd.MPDClient()
         self.mpd.connect()
-        self.albums = []
 
     def close(self):
         self.mpd.disconnect()
@@ -48,31 +47,46 @@ class Client():
         except:
             return None
 
-    def read_albums(self):
-        print('loading albums')
+    def load(self):
+        data = []
         albums_list = self.mpd.list('album')
+        # TODO: include progress bar
         for album_name in albums_list:
+            # read metadata
             track = self.mpd.find('album', album_name)[0]
             file = track['file']
             album_id = self.generate_album_id(file)
             album_artist = self.get_album_artist(track)
             album_year = self.get_album_year(track)
-            self.albums.append({
+            data.append({
                 "_id": album_id,
                 "album": album_name,
                 "artist": album_artist,
                 "year": album_year
             })
-            album_art_path = os.path.join(ALBUM_ART_DIR, str(album_id) + '.jpg')
+            # read and save album art
+            album_art_dir = os.path.join(os.getcwd(), 'static', 'img')
+            album_art_path = os.path.join(album_art_dir, str(album_id) + '.jpg')
             if not os.path.isfile(album_art_path):
                 picture_data = self.read_picture(file)
                 if picture_data is not None:
-                    print('loading album art')
+                    Path(os.path.dirname(album_art_path)).mkdir(parents=True, exist_ok=True)
                     with open(album_art_path, 'wb') as file:
                         file.write(picture_data)
+        return data
 
 if __name__ == '__main__':
-    cli = Client()
-    cli.read_albums()
-    print(cli.albums[0])
-    cli.close()
+    app = Flask(__name__, static_url_path='')
+
+    @app.route('/')
+    def index():
+        return send_from_directory('web', 'index.html')
+    
+    @app.route('/api')
+    def api():
+        cli = Client()
+        data = cli.load()
+        cli.close()
+        return jsonify(data)
+    
+    app.run()
