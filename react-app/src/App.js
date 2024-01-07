@@ -1,31 +1,34 @@
 import './App.css'
+import GridItem from './GridItem';
 
 import React, { useState, useEffect } from 'react';
 
 const App = () => {
-  const [albums, setAlbums] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [library, setLibrary] = useState([]);
   const [sortMethod, setSortMethod] = useState(localStorage.getItem('sortMethod') || 'year');
   const [sortOrder, setSortOrder] = useState(localStorage.getItem('sortOrder') || 'ascending');
   const [gridSize, setGridSize] = useState(localStorage.getItem('gridSize') || 5);
   const host = !process.env.NODE_ENV || process.env.NODE_ENV === 'development' ? 'http://127.0.0.1:5000' : '';
 
   useEffect(() => {
-    localStorage.setItem('sortMethod', sortMethod)
+    localStorage.setItem('sortMethod', sortMethod);
   }, [sortMethod]);
 
   useEffect(() => {
-    localStorage.setItem('sortOrder', sortOrder)
+    localStorage.setItem('sortOrder', sortOrder);
   }, [sortOrder]);
 
   useEffect(() => {
-    localStorage.setItem('gridSize', gridSize)
+    localStorage.setItem('gridSize', gridSize);
   }, [gridSize]);
   
   useEffect(() => {
     fetch(`${host}/api`)
          .then((response) => response.json())
          .then((data) => {
-            setAlbums(data);
+            setLibrary(data);
+            setLoading(false);
          }) 
          .catch((err) => {
             console.log(err.message);
@@ -70,60 +73,42 @@ const App = () => {
          });
   }
 
-  const itemStyle = {
-    width: gridSize * 50
-  }
-
-  const imgStyle = {
-    maxWidth: gridSize * 50,
-    maxHeight: gridSize * 50
-  }
-
   return (
     <div className="App">
-      <select
-        value={sortMethod}
-        onChange={e => setSortMethod(e.target.value)}
-      >
-        <option value="year">year</option>
-        <option value="artist">artist</option>
-      </select>
-
-      <select
-        value={sortOrder}
-        onChange={e => setSortOrder(e.target.value)}
-      >
-        <option value="ascending">ascending</option>
-        <option value="descending">descending</option>
-      </select>
-
-      <input
-        type="range" 
-        name="size"
-        min="1" max="10" 
-        value={gridSize}
-        onChange={e => setGridSize(e.target.value)}
-      />
-
+      <div className="toolbar">
+        <select
+          value={sortMethod}
+          onChange={e => setSortMethod(e.target.value)}
+        >
+          <option value="year">year</option>
+          <option value="artist">artist</option>
+        </select>
+        <select
+          value={sortOrder}
+          onChange={e => setSortOrder(e.target.value)}
+        >
+          <option value="ascending">ascending</option>
+          <option value="descending">descending</option>
+        </select>
+        <input
+          type="range" 
+          name="size"
+          min="1" max="9" 
+          value={gridSize}
+          onChange={e => setGridSize(e.target.value)}
+        />
+        {loading && <span className='loader'>Loading library...</span>}
+      </div>
       <div className='container'>
-        {albums.sort(compareAlbums).map((album) => {
-          return (
-            <div
-              key={album.id}
-              className="item" 
-              style={itemStyle}
-              onClick={(e) => {playAlbum(album.name)}}
-            >
-              {album.artwork === true &&
-                <img
-                  alt={album.name}
-                  src={`${host}/static/img/${album.id}.jpg`}
-                  style={imgStyle}
-                />
-              }
-            </div>
-          )
-        })}
+        {library.sort(compareAlbums).map((album) => 
+          <GridItem
+            key={album.id}
+            album={album}
+            gridSize={gridSize}
+            host={host}
+            onClick={(e) => {playAlbum(album.name)}}
+          />
+        )}
       </div>
     </div>
   );

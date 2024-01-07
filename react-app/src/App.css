@@ -1,0 +1,42 @@
+:root {
+    color-scheme: light dark;
+    font-family: system-ui
+}
+  
+
+.toolbar {
+    z-index: 1;
+    position: fixed;
+    top: 0;
+    width: 100%;
+    display: flex;
+    gap: 10px;
+    background-color: Canvas;
+    padding: 10px;
+}
+
+.loader {
+    margin-left: 10px;
+}
+
+.container {
+    z-index: 0;
+    display: flex;
+    flex-wrap: wrap;
+    margin-top: 50px;
+}
+
+.item {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    container-type: inline-size;
+    overflow: hidden;
+}
+
+.missing-art {
+    display: flex;
+    flex-direction: column;
+    text-align: center;
+    font-size: 10cqw;
+}
