@@ -47,9 +47,11 @@ const App = () => {
           return -1;
         }
         if (a.artist > b.artist) {
-          return 1;
+          return 1; 
         }
         return 0
+      case 'random':
+        return Math.random() - 0.5
       default:
         return 0
     }
@@ -82,6 +84,7 @@ const App = () => {
         >
           <option value="year">year</option>
           <option value="artist">artist</option>
+          <option value="random">random</option>
         </select>
         <select
           value={sortOrder}
@@ -106,7 +109,7 @@ const App = () => {
             album={album}
             gridSize={gridSize}
             host={host}
-            onClick={(e) => {playAlbum(album.name)}}
+            onClick={e => {playAlbum(album.name)}}
           />
         )}
       </div>

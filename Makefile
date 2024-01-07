@@ -1,5 +1,5 @@
 run:
-	.venv/bin/flask --app mpd-web run --debug
+	.venv/bin/flask --app longplay run --debug
 
 freeze:
-	pip freeze > requirements.txt
+	python3 -m pip freeze > requirements.txt
