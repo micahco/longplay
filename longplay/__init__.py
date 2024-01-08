@@ -1,12 +1,21 @@
 #!/usr/bin/env python3
 # coding: utf-8
 
-import os
+import threading
 from flask import Flask, request, jsonify, render_template
 from flask_cors import CORS
 from .client import Client
 
+def cache_albums():
+    cli = Client()
+    cli.load_albums()
+    cli.close()
+
+
 def create_app(test_config=None):
+    t1 = threading.Thread(target=cache_albums)
+    t1.start()
+
     app = Flask(
         __name__,
         instance_relative_config=True,

@@ -1,13 +1,13 @@
 const GridItem = (props) => {
-    const GRID_BASE = 40;
+    const BASE_SIZE = 40;
 
     const itemStyle = {
-        width: props.gridSize * GRID_BASE
+        width: props.gridSize * BASE_SIZE
     }
 
     const imgStyle = {
-        maxWidth: props.gridSize * GRID_BASE,
-        maxHeight: props.gridSize * GRID_BASE
+        maxWidth: props.gridSize * BASE_SIZE,
+        maxHeight: props.gridSize * BASE_SIZE
     }
 
     return (
