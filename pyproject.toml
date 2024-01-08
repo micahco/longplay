@@ -1,9 +1,11 @@
 [project]
 name = "longplay"
 version = "0.1.0"
-description = "MPD web interface with a focus on albums.."
+description = "MPD web interface with a focus on albums."
 dependencies = [
     "flask",
+    "flask_cors",
+    "gunivorn",
     "python-musicpd",
 ]
 

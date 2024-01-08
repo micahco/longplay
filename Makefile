@@ -1,5 +1,8 @@
 run:
+	.venv/bin/gunicorn -w 4 'longplay:create_app()'
+
+debug:
 	.venv/bin/flask --app longplay run --debug
 
-freeze:
-	python3 -m pip freeze > requirements.txt
+build:
+	.venv/bin/python3 -m build --wheel

@@ -1,3 +1,6 @@
+#!/usr/bin/env python3
+# coding: utf-8
+
 import os
 from flask import Flask, request, jsonify, render_template
 from flask_cors import CORS
