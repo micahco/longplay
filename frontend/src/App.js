@@ -79,6 +79,7 @@ const App = () => {
     <div className="App">
       <div className="toolbar">
         <select
+          name="sort-method"
           value={sortMethod}
           onChange={e => setSortMethod(e.target.value)}
         >
@@ -87,6 +88,7 @@ const App = () => {
           <option value="random">random</option>
         </select>
         <select
+          name="sort-order"
           value={sortOrder}
           onChange={e => setSortOrder(e.target.value)}
         >
